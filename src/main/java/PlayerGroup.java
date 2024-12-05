@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -16,26 +15,41 @@ public class PlayerGroup {
     }
 
     private List<Player> createPlayerGroup(String playerNames) {
+        return validateGroup(playerNames).stream()
+                .map(Player::new)
+                .toList();
+    }
+
+    private List<String> validateGroup(String playerNames) {
         if (playerNames == null || playerNames.isBlank()) {
             throw new IllegalArgumentException();
         }
 
-        List<String> parsedPlayerNames = Arrays.asList(playerNames.split(","));
+        List<String> parsedPlayerNames = parsePlayerNames(playerNames);
 
         if (parsedPlayerNames.size() < 2 || parsedPlayerNames.size() > 10) {
             throw new IllegalArgumentException();
         }
 
-        List<Player> players = new ArrayList<>();
-        Set<String> uniqueNames = new HashSet<>();
-        for (String name : parsedPlayerNames) {
-            name = name.trim();
-            if (!uniqueNames.add(name)) {
-                throw new IllegalArgumentException();
-            }
-            players.add(new Player(name));
+        if (duplicateNameCheck(parsedPlayerNames)) {
+            throw new IllegalArgumentException();
         }
+        return parsedPlayerNames;
+    }
 
-        return players;
+    private List<String> parsePlayerNames(String playerNames) {
+        return Arrays.stream(playerNames.split(","))
+                .map(String::trim)
+                .toList();
+    }
+
+    private boolean duplicateNameCheck(List<String> playerNames) {
+        Set<String> uniqueNames = new HashSet<>();
+        for (String name : playerNames) {
+            if (!uniqueNames.add(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
