@@ -1,7 +1,8 @@
+package domain;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class PlayerGroup {
     private final List<Player> playerNames;
@@ -12,6 +13,26 @@ public class PlayerGroup {
 
     public List<Player> getPlayerNames() {
         return playerNames;
+    }
+
+    public int getPlayerCount() {
+        return playerNames.size();
+    }
+
+    public int findIndexByName(String targetName) {
+        for (int i = 0; i < playerNames.size(); i++) {
+            if (isContains(targetName)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public Boolean isContains(String name) {
+        if (playerNames.stream().anyMatch(p -> p.getName().equals(name))) {
+            return true;
+        }
+        return false;
     }
 
     private List<Player> createPlayerGroup(String playerNames) {
@@ -31,7 +52,7 @@ public class PlayerGroup {
             throw new IllegalArgumentException();
         }
 
-        if (duplicateNameCheck(parsedPlayerNames)) {
+        if (hasDuplicates(parsedPlayerNames)) {
             throw new IllegalArgumentException();
         }
         return parsedPlayerNames;
@@ -43,13 +64,7 @@ public class PlayerGroup {
                 .toList();
     }
 
-    private boolean duplicateNameCheck(List<String> playerNames) {
-        Set<String> uniqueNames = new HashSet<>();
-        for (String name : playerNames) {
-            if (!uniqueNames.add(name)) {
-                return true;
-            }
-        }
-        return false;
+    private boolean hasDuplicates(List<String> playerNames) {
+        return new HashSet<>(playerNames).size() != playerNames.size();
     }
 }
